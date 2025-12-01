@@ -10,7 +10,13 @@ Formato de datos recibidos desde Arduino (JSON):
     "tipo": "tanque",
     "tipoFertilizante": "M" | "B" | "C",  # Solo para tipo "tanque"
     "nivel": float,                        # Solo para tipo "tanque"
-    "presion": float,
+    "presion": float
+}
+
+{
+    "tipo":"manometro",
+    "presion":25
+}
 
 """
 
@@ -37,7 +43,7 @@ class SerialListener:
 
                 while True:
                     linea_bytes = await self.ser.readline_async()
-                    print("[Serial_Listener] ")
+                    print("\n[Serial_Listener] ")
                     print(f"Recibido de Arduino: {linea_bytes}\n")
 
                     self.ser.write(b'ACK\n')  # Enviar recibido
@@ -53,14 +59,14 @@ class SerialListener:
                     await self.mqtt_client.publish(datos_clasificados["topico"], datos_clasificados_json)  # Publica el dato en el tópico correspondiente
                     
             except Exception as e:
-                print(f"Error en la conexión serial: {e}.\n Cerrando y reintentando en 5 segundos...")
+                print(f"Error en la conexión serial: {e}.\n Cerrando y reintentando en 10 segundos...")
                 try:
                     self.ser.close()
                 except:
                     pass
                 self.ser = None
 
-                await asyncio.sleep(5)  # Esperar antes de reintentar
+                await asyncio.sleep(10)  # Esperar antes de reintentar
 
     async def connect_serial(self):
         while True:
@@ -70,20 +76,17 @@ class SerialListener:
                 return
             except Exception as e:
                 print("[Serial_Listener] ")
-                print(f"Error al conectar con el puerto serial: {e}. Reintentando en 5 segundos...")
-                await asyncio.sleep(5)  # Esperar antes de reintentar
+                print(f"Error al conectar con el puerto serial: {e}. Reintentando en 10 segundos...")
+                await asyncio.sleep(10)  # Esperar antes de reintentar
 
 
     def clasificar_mensaje(self, datos):
-        value = None
         if datos["tipo"] == "tanque":
             datos["topico"] = f"invernadero/tanque/{datos['tipoFertilizante']}"
-            value = datos["nivel"]
         elif datos["tipo"] == "manometro":
-            datos["topico"] = "invernadero/manometro/presion"
-            value = datos["presion"]
+            datos["topico"] = "invernadero/manometro/presion"            
         elif datos["tipo"] == "bomba":
             datos["topico"] = "invernadero/bomba/estado"
-            value = datos["estado"]
+
         return datos
     

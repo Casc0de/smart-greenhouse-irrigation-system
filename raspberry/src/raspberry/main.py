@@ -3,43 +3,68 @@ import os
 import sys
 import aiomqtt
 
-from serial_listener import SerialListener
-from mqtt_listener import MQTTListener
-from data_filter import DataFilter
 
-async def main():
+from raspberry.serial_listener import SerialListener
+from raspberry.mqtt_listener import MQTTListener
+from raspberry.data_filter import DataFilter
+from raspberry.database_writer import DatabaseWriter
+from raspberry.config import StaticConfig
+
+
+async def _main():
     # queues para la comunicación entre tareas ------------------------
-    filter_queue = asyncio.Queue()
+    tank_data_queue = asyncio.Queue()
+    pressure_data_queue = asyncio.Queue()
+    environment_data_queue = asyncio.Queue()
+    soil_data_queue = asyncio.Queue()
+
     db_queue = asyncio.Queue()
     
-    
-    # Inicializar componentes ------------------------------------------
-    serial_listener = SerialListener(puerto="COM5", baudrate=57600)
-    print(serial_listener)
-    mqtt_listener = MQTTListener(filter_queue)
-    print(mqtt_listener)
-    #"""
-    data_filter = DataFilter(filter_queue, db_queue, thresholds={
-        "tanque/M": 5,      # Umbral para nivel de tanque
-        "tanque/W": 5,      # Umbral para nivel de tanque
-        "tanque/F": 5,      # Umbral para nivel de tanque
-        "manometro": 2,   # Umbral para presión del manómetro
-        "bomba": 1        # Umbral para estado de la bomba
-    })
-    #"""
+    # Inicializar componentes asíncronos -------------------------------
+    serial_listener = SerialListener(puerto=StaticConfig.SERIAL_PORT, 
+                                     baudrate=StaticConfig.BAUDRATE)
+    mqtt_listener = MQTTListener(tank_data_queue, 
+                                 pressure_data_queue, 
+                                 environment_data_queue, 
+                                 soil_data_queue)
+    data_filter = DataFilter(tank_data_queue, 
+                             pressure_data_queue, 
+                             environment_data_queue,
+                             soil_data_queue,
+                             db_queue, 
+                             THRESHOLDS=StaticConfig.THRESHOLDS)
+    database_writer = DatabaseWriter(db_queue, 
+                                     MONGO_URI=StaticConfig.MONGO_URI, 
+                                     DB_NAME=StaticConfig.DB_NAME)
 
     # Tareas concurrentes -------------------------------------
     # Conectarse al broker mqtt
-    async with aiomqtt.Client(hostname="127.0.0.1", port=1883) as client:
+    print("Conectando al broker MQTT...")
+    async with aiomqtt.Client(hostname=StaticConfig.MQTT_HOST, 
+                              port=StaticConfig.MQTT_PORT) as client:
         print("Conectado al broker MQTT")
         # Ejecutar las tareas concurrentes
         await asyncio.gather(
-            serial_listener.recibir_datos_arduino(client),
+            #serial_listener.recibir_datos_arduino(client),     # TODO: descomentar
             mqtt_listener.recibir_dato(client),
-            data_filter.filtrar_datos()
+            data_filter.tank_processor(),
+            data_filter.pressure_processor(),
+            data_filter.environment_processor(),
+            data_filter.soil_processor(),
+            database_writer.start()
         )
 
-if __name__ == "__main__":
+def main():
+    """Entrypoint sincrónico para los scripts/console_scripts.
+
+    Poetry/console scripts no awaitean coroutines, así que exponemos una
+    función sincronica `main()` que ejecuta la coroutine `_main()` con
+    `asyncio.run()`.
+    """
     if sys.platform.lower() == "win32" or os.name.lower() == "nt":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    asyncio.run(main())
+    asyncio.run(_main())
+
+
+if __name__ == "__main__":
+    main()
