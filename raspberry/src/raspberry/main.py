@@ -39,20 +39,26 @@ async def _main():
 
     # Tareas concurrentes -------------------------------------
     # Conectarse al broker mqtt
-    print("Conectando al broker MQTT...")
-    async with aiomqtt.Client(hostname=StaticConfig.MQTT_HOST, 
-                              port=StaticConfig.MQTT_PORT) as client:
-        print("Conectado al broker MQTT")
-        # Ejecutar las tareas concurrentes
-        await asyncio.gather(
-            #serial_listener.recibir_datos_arduino(client),     # TODO: descomentar
-            mqtt_listener.recibir_dato(client),
-            data_filter.tank_processor(),
-            data_filter.pressure_processor(),
-            data_filter.environment_processor(),
-            data_filter.soil_processor(),
-            database_writer.start()
-        )
+    try:
+            
+        print("Conectando al broker MQTT...")
+        async with aiomqtt.Client(hostname=StaticConfig.MQTT_HOST, 
+                                port=StaticConfig.MQTT_PORT) as client:
+            print("Conectado al broker MQTT")
+            # Ejecutar las tareas concurrentes
+            await asyncio.gather(
+                #serial_listener.recibir_datos_arduino(client),     # TODO: descomentar
+                mqtt_listener.recibir_dato(client),
+                data_filter.tank_processor(),
+                data_filter.pressure_processor(),
+                data_filter.environment_processor(),
+                data_filter.soil_processor(),
+                database_writer.start()
+            )
+    except Exception as e:
+        print(f"Error al conectar al broker MQTT: {e}")
+        print("Reintentando en 5 segundos...")
+        await asyncio.sleep(5)
 
 def main():
     """Entrypoint sincrónico para los scripts/console_scripts.
@@ -63,7 +69,9 @@ def main():
     """
     if sys.platform.lower() == "win32" or os.name.lower() == "nt":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    asyncio.run(_main())
+
+    while True:
+        asyncio.run(_main())
 
 
 if __name__ == "__main__":

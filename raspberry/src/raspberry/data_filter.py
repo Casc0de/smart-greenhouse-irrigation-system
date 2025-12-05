@@ -117,8 +117,8 @@ class DataFilter:
                             soil_temperature = message["measurementValue"]
                         elif message["measurementId"] == 4103:  # Soil Moisture
                             soil_moisture = message["measurementValue"]
-
-                print(f"Soil Moisture: {soil_moisture}")
+                            
+                print(f"Soil Moisture: {soil_moisture}, Soil Temperature: {soil_temperature}")
 
                 timestamp_utc = self.get_timestamp_utc()
                 await self.db_queue.put({"tiempo": timestamp_utc,
