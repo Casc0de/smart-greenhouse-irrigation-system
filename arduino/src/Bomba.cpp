@@ -10,16 +10,17 @@ Bomba::Bomba(uint8_t pinEncender,
 void Bomba::begin()
 {
     pinMode(_pinEncender, OUTPUT);
-    pinMode(_pinAlarma, OUTPUT);
+    pinMode(_pinAlarma, INPUT);
+    digitalWrite(_pinEncender, HIGH);
 }
 
 // TODO:
 void Bomba::encender()
-{
-    // lógica en Arduino para encender la bomba
+{   
+    digitalWrite(11, LOW);
 }
 // TODO:
 void Bomba::apagar()
 {
-    // lógica en Arduino para apagar la bomba
+    digitalWrite(11,HIGH);
 }
