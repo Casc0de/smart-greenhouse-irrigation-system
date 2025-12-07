@@ -16,18 +16,20 @@ U = Sunday
 #include "ValvulaEstado.h"
 #include "ValvulaOnOff.h"
 #include "ControladorSensores.h"
+#include "ControladorComunicacionConRaspberry.h"
 
 class ControladorRiego
 {
 public:
     ControladorSensores ctlSensores;
+    ControladorComunicacionConRaspberry &ctlComunicacion;
     static constexpr uint8_t NUM_VALVULAS_ON_OFF = 5;
     static constexpr uint8_t NUM_VALVULAS_ESTADO = 2;
     Bomba bomba;
     ValvulaOnOff valvulasOnOff[NUM_VALVULAS_ON_OFF];
     ValvulaEstado valvulasEstado[NUM_VALVULAS_ESTADO];
 
-    ControladorRiego(); // constructor
+    ControladorRiego(ControladorComunicacionConRaspberry &ctlComExistente); // constructor
     void begin();
     void leerValoresValvulasOnOff();
     void leerValoresValvulasEstado();
