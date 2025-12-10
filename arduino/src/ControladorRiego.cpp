@@ -9,8 +9,9 @@ static const unsigned long T_LAVADO_MS = 20UL * 1000UL;
 static const unsigned long T_TRANSICION_SECCION_MS = 20UL * 1000UL;
 static const unsigned long T_CIERRE_MS = 20UL * 1000UL;
 
-ControladorRiego::ControladorRiego()
-    : bomba(11, 12),
+ControladorRiego::ControladorRiego(ControladorComunicacionConRaspberry &ctlComExistente)
+    : ctlComunicacion(ctlComExistente),
+      bomba(11, 12),
       valvulasOnOff{
           ValvulaOnOff(4),
           ValvulaOnOff(5),
