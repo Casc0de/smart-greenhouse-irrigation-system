@@ -1,7 +1,8 @@
 #include "ControladorRiego.h"
 
-ControladorRiego::ControladorRiego()
-    : bomba(14, 15),
+ControladorRiego::ControladorRiego(ControladorComunicacionConRaspberry &ctlComExistente)
+    : ctlComunicacion(ctlComExistente),
+      bomba(14, 15),
       valvulasOnOff{
           ValvulaOnOff(7),   // valvula 2 : on-off
           ValvulaOnOff(8),   // valvula 3 : on-off
