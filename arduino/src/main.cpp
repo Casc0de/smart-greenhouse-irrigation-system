@@ -13,7 +13,6 @@ ControladorRiego ctlRiego(ctlComRaspberry);
 ControladorTiempo ctlTiempo;
 
 const unsigned long DURACION = 10000; // 10 segundos
-
 static bool activo = false;
 static unsigned long tInicio = 0;
 
@@ -30,7 +29,6 @@ void setup()
 
 void loop()
 {
-
   if (ctlTiempo.esMomentoDeRiego())
   {
     Serial.println(">> ControladorTiempo: es momento de riego según horario");
