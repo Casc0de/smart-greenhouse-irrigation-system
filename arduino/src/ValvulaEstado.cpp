@@ -18,7 +18,6 @@ void ValvulaEstado::begin()
     _modoApertura = false;
     _tInicioMovimiento = 0;
     _tDuracionMovimiento = 0;
-    posicion = 0; // quieta
 }
 
 /*
@@ -38,8 +37,6 @@ void ValvulaEstado::abrir(uint8_t tSegundos)
     // Activar relé de apertura, desactivar de cierre
     digitalWrite(_pinOpen, LOW);
     digitalWrite(_pinShut, HIGH);
-
-    posicion = 1; // abriendo (debug)
 }
 
 /*
@@ -58,8 +55,6 @@ void ValvulaEstado::cerrar(uint8_t tSegundos)
     // Activar relé de cierre, desactivar de apertura
     digitalWrite(_pinShut, LOW);
     digitalWrite(_pinOpen, HIGH);
-
-    posicion = 2; // cerrando (debug)
 }
 
 /*
@@ -80,8 +75,5 @@ void ValvulaEstado::actualizar()
         digitalWrite(_pinShut, HIGH);
 
         _moviendo = false;
-        // Puedes dejar la última dirección en posicion si quieres,
-        // pero para debug suele ser más claro marcarla como "quieta".
-        posicion = 0;
     }
 }

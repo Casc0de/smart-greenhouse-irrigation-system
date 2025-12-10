@@ -67,24 +67,6 @@ void ControladorRiego::cambiarEstado(EstadoRiego nuevo)
     _entryPendiente = true; // marca que falta hacer ENTRY del nuevo estado
 }
 
-void ControladorRiego::leerValoresValvulasOnOff()
-{
-    for (int i = 0; i < NUM_VALVULAS_ON_OFF; ++i)
-    {
-        Serial.println("VálvulaOnOff " + String(i) + " leída.");
-        Serial.println("  Posicion: " + String(valvulasOnOff[i].posicion));
-    }
-}
-
-void ControladorRiego::leerValoresValvulasEstado()
-{
-    for (int i = 0; i < NUM_VALVULAS_ESTADO; ++i)
-    {
-        Serial.println("VálvulaEstado " + String(i) + " leída.");
-        Serial.println("  Posicion: " + String(valvulasEstado[i].posicion));
-    }
-}
-
 // Máquina de estados principal
 void ControladorRiego::regar()
 {
