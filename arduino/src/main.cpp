@@ -1,9 +1,11 @@
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "Horario.h"
 #include "ControladorRiego.h"
 #include "ControladorComunicacionConRaspberry.h"
 #include "ControladorTiempo.h"
+#include "Bomba.h"
 
 // put function and object declarations here:
 
@@ -11,12 +13,20 @@ ControladorComunicacionConRaspberry ctlComRaspberry(Serial);
 ControladorRiego ctlRiego(ctlComRaspberry);
 ControladorTiempo ctlTiempo;
 
+const unsigned long DURACION = 10000; // 10 segundos
+
+static bool activo = false;
+static unsigned long tInicio = 0;
+
 void setup()
 {
-  // put your setup code here, to run once:
   Serial.begin(57600);
+  Wire.begin();
+
   ctlRiego.begin();
   ctlTiempo.begin();
+
+  Serial.println("=== Sistema de riego automático iniciado ===");
 }
 
 void loop()

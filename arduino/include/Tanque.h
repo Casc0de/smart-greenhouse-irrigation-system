@@ -22,14 +22,15 @@ private:
     uint8_t _pinTrigger;
 
 public:
-    uint8_t nivel = 0; // Nivel de fertilizante en el tanque
+    uint8_t nivel = 0; // Nivel de fertilizante en el tanque (0–100, si luego lo calibras)
     char tipo;         // Tipo de fertilizante por día
 
     Tanque(uint8_t pinEcho,
            uint8_t pinTrigger,
            char tipoFertilizante); // constructor
-    void begin();                  // inicializador de Hardware para Arduino
-    uint8_t medirNivel();
+
+    void begin();       // inicializador de Hardware para Arduino
+    float medirNivel(); // devuelve distancia en cm (por ahora)
 };
 
 #endif
