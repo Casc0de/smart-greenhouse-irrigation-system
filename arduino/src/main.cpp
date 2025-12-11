@@ -7,7 +7,8 @@
 #include "ControladorTiempo.h"
 #include "Bomba.h"
 
-// Objetos globales
+// put function and object declarations here:
+
 ControladorComunicacionConRaspberry ctlComRaspberry(Serial);
 ControladorRiego ctlRiego(ctlComRaspberry);
 ControladorTiempo ctlTiempo;

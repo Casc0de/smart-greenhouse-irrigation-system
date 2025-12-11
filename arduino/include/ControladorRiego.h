@@ -31,7 +31,6 @@ public:
     ValvulaEstado valvulasEstado[NUM_VALVULAS_ESTADO];
 
     ControladorRiego(ControladorComunicacionConRaspberry &ctlComExistente); // constructor
-
     void begin();
 
     // Llamado desde SistemaRiego cuando ControladorTiempo dice “ya es hora”
