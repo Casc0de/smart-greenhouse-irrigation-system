@@ -30,3 +30,5 @@ class MQTTListener:
                 await self.environment_data_queue.put(mensaje)
             elif topic.startswith("application/3d192c70-c2df-4b6d-9464-ae69106686fa/device/"):
                 await self.soil_data_queue.put(mensaje)
+            else: 
+                print(f"[MQTT_Listener] \n [WARNING] \n Tópico no reconocido: {topic}")
