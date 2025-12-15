@@ -25,15 +25,15 @@ void setup()
   ctlRiego.begin();
   ctlTiempo.begin();
 
-  Serial.println("=== Sistema de riego automático iniciado ===");
+  // Serial.println("=== Sistema de riego automático iniciado ===");
 }
 
 void loop()
 {
   if (ctlTiempo.esMomentoDeRiego())
   {
-    Serial.println(">> ControladorTiempo: es momento de riego según horario");
-    // ctlRiego.iniciarCiclo(); // Arranca la máquina de estados de riego
+    // Serial.println(">> ControladorTiempo: es momento de riego según horario");
+    //  ctlRiego.iniciarCiclo(); // Arranca la máquina de estados de riego
 
     ctlRiego.bomba.encender();         // Prueba directa de bomba
     ctlRiego.valvulasOnOff[0].abrir(); // Prueba directa de válvula On-Off

@@ -26,7 +26,8 @@ bool ControladorComunicacionConRaspberry::enviarManometro(const Manometro &objMa
             return true;
         }
         // Si no se recibe ACK, esperar un poco antes de reintentar
-        delay(1000);
+        _serialPort.println("Reintentando enviar estado de manometro...");
+        _serialPort.println(); // Asegurarse de enviar un salto de línea al final
     }
     // Si se agotaron los reintentos, retornar false
     return false;
@@ -50,8 +51,9 @@ bool ControladorComunicacionConRaspberry::enviarTanque(const Tanque &objTanque)
             return true;
         }
         // Si no se recibe ACK, esperar un poco antes de reintentar
-        delay(3000);
+
         _serialPort.println("Reintentando enviar estado de tanque...");
+        _serialPort.println(); // Asegurarse de enviar un salto de línea al final
     }
     // Si se agotaron los reintentos, retornar false
     return false;
@@ -75,8 +77,9 @@ bool ControladorComunicacionConRaspberry::enviarEstadoBomba(bool &estado)
             return true;
         }
         // Si no se recibe ACK, esperar un poco antes de reintentar
-        delay(1000);
+
         _serialPort.println("Reintentando enviar estado de bomba...");
+        _serialPort.println(); // Asegurarse de enviar un salto de línea al final
     }
     // Si se agotaron los reintentos, retornar false
     return false;
