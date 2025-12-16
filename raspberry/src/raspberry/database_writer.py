@@ -32,8 +32,7 @@ class DatabaseWriter:
         
         collection_name = data["collection"]
         if collection_name not in self.collections:
-            print(f"[Database_Writer] \n [WARNING] \n Colección no encontrada: {collection_name}")
-            logging.info("")
+            logging.warning(f"[Database_Writer] \n [WARNING] \n Colección no encontrada: {collection_name}")
             return
         
         collection = self.collections[collection_name]
@@ -41,5 +40,4 @@ class DatabaseWriter:
         document = {k: v for k, v in data.items() if k != "collection"}
 
         result = await collection.insert_one(document)
-        print(f"[Database_Writer] Documento insertado con ID: {result.inserted_id}")
-        logging.info("")
+        logging.info(f"[Database_Writer] Documento insertado con ID: {result.inserted_id}")

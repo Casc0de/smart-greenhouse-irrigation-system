@@ -16,14 +16,14 @@ class MQTTListener:
         
         # Suscribirse al tópico Invernadero_Edier
         await self.mqtt_client.subscribe("invernadero/#")
-        print("Escuchando en tópico: invernadero/#")
+        logging.info("Escuchando en tópico: invernadero/#")
         await self.mqtt_client.subscribe("application/+/device/+/event/up")  # Tópico para datos ambientales LoRa
-        print("Escuchando en tópico: application/+/device/+/event/up")
+        logging.info("Escuchando en tópico: application/+/device/+/event/up")
         logging.info("")
 
         async for mensaje in self.mqtt_client.messages:
             topic = mensaje.topic.value
-            print(f"\n[MQTT_Listener] \n Mensaje recibido en tópico: {topic}\n")
+            logging.info(f"\n[MQTT_Listener] \n Mensaje recibido en tópico: {topic}\n")
             logging.info("")
             
             if topic.startswith(tank_topic):

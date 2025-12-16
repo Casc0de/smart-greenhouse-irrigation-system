@@ -42,14 +42,14 @@ class SerialListener:
         while True:         # Se encarga de que la conexión serial esté siempre activa
             try:
                 await self.connect_serial() # Asegura que la conexión serial esté establecida
-                print("Conectado al puerto serial", self.puerto)
-                logging.info("")
+                logging.info(f"Conectado al puerto serial {self.puerto}")
+                
                 #logging.info(f"Conectado al puerto serial {self.puerto}")
 
                 while True:
                     linea_bytes = await self.ser.readline_async()
-                    print("\n[Serial_Listener] ")
-                    print(f"Recibido de Arduino: {linea_bytes}\n")
+                    logging.info("\n[Serial_Listener] ")
+                    logging.info(f"Recibido de Arduino: {linea_bytes}\n")
 
                     self.ser.write(b'ACK\n')  # Enviar recibido
 
@@ -65,7 +65,7 @@ class SerialListener:
                     await self.mqtt_client.publish(datos_clasificados["topico"], datos_clasificados_json)  # Publica el dato en el tópico correspondiente
                     
             except Exception as e:
-                print(f"Error en la conexión serial: {e}.\n Cerrando y reintentando en 10 segundos...")
+                logging.error(f"Error en la conexión serial: {e}.\n Cerrando y reintentando en 10 segundos...")
                 
 
                 try:
@@ -80,12 +80,11 @@ class SerialListener:
         while True:
             try:
                 self.ser = AioSerial(port=self.puerto, baudrate=self.baudrate)
-                print("Serial conectado en", self.puerto)
-                logging.info("")
+                logging.info(f"Serial conectado en {self.puerto}")
                 return
             except Exception as e:
-                print("[Serial_Listener] ")
-                print(f"Error al conectar con el puerto serial: {e}. Reintentando en 10 segundos...")
+                logging.info("[Serial_Listener] ")
+                logging.error(f"Error al conectar con el puerto serial: {e}. Reintentando en 10 segundos...")
                 logging.info("")
                 await asyncio.sleep(10)  # Esperar antes de reintentar
 
@@ -97,7 +96,7 @@ class SerialListener:
             datos["topico"] = "invernadero/manometro/presion"            
         elif datos["tipo"] == "bomba":
             datos["topico"] = "invernadero/bomba/estado"
-        logging.info("")
+        
         
 
         return datos
