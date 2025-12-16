@@ -46,10 +46,10 @@ async def _main():
     # Tareas concurrentes -------------------------------------
     # Conectarse al broker mqtt
     try:
-        logging.info("Conectando al broker MQTT...")
+        logging.info("[Main] \n Conectando al broker MQTT... \n")
         async with aiomqtt.Client(hostname=StaticConfig.MQTT_HOST, 
                                 port=StaticConfig.MQTT_PORT) as client:
-            logging.info("Conectado al broker MQTT")
+            logging.info("[Main] \n Conectado al broker MQTT \n")
             # Ejecutar las tareas concurrentes
             await asyncio.gather(
                 serial_listener.recibir_datos_arduino(client),
@@ -65,8 +65,8 @@ async def _main():
                 database_writer.start()
             )
     except Exception as e:
-        logging.error(f"Error al conectar al broker MQTT: {e}")
-        logging.info("Reintentando en 5 segundos...")
+        logging.error(f"[Main] \n Error al conectar al broker MQTT: {e} \n")
+        logging.info("[Main] \n Reintentando en 5 segundos... \n")
         await asyncio.sleep(5)
 
 def main():

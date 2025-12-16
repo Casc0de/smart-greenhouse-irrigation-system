@@ -12,10 +12,10 @@ class DatabaseWriter:
         self.db_queue = db_queue
 
     async def start(self):
-        logging.info("Conectándose a MongoDB")
+        logging.info("Conectándose a MongoDB \n")
         self.client = AsyncIOMotorClient(self.mongo_uri)
         self.db = self.client[self.db_name]
-        logging.info("Conectado")
+        logging.info("Conectado a MongoDB \n")
         self.collections = {
             "tank_levels": self.db["tank_levels"],
             "irrigation_pressure": self.db["irrigation_pressure"],
@@ -32,7 +32,7 @@ class DatabaseWriter:
         
         collection_name = data["collection"]
         if collection_name not in self.collections:
-            logging.warning(f"[Database_Writer] \n [WARNING] \n Colección no encontrada: {collection_name}")
+            logging.warning(f"[Database_Writer] \n Colección no encontrada: {collection_name} \n")
             return
         
         collection = self.collections[collection_name]
@@ -40,4 +40,4 @@ class DatabaseWriter:
         document = {k: v for k, v in data.items() if k != "collection"}
 
         result = await collection.insert_one(document)
-        logging.info(f"[Database_Writer] Documento insertado con ID: {result.inserted_id}")
+        logging.info(f"[Database_Writer] \n Documento insertado con ID: {result.inserted_id} \n")

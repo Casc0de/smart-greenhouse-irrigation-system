@@ -42,14 +42,13 @@ class SerialListener:
         while True:         # Se encarga de que la conexión serial esté siempre activa
             try:
                 await self.connect_serial() # Asegura que la conexión serial esté establecida
-                logging.info(f"Conectado al puerto serial {self.puerto}")
+                logging.info(f"[Serial_Listener] \n Conectado al puerto serial {self.puerto} \n")
                 
                 #logging.info(f"Conectado al puerto serial {self.puerto}")
 
                 while True:
                     linea_bytes = await self.ser.readline_async()
-                    logging.info("\n[Serial_Listener] ")
-                    logging.info(f"Recibido de Arduino: {linea_bytes}\n")
+                    logging.info(f"[Serial_Listener] \n Recibido de Arduino: {linea_bytes} \n")
 
                     self.ser.write(b'ACK\n')  # Enviar recibido
 
@@ -60,14 +59,12 @@ class SerialListener:
                     # Clasificación de datos
                     datos_clasificados = self.clasificar_mensaje(data)
                     datos_clasificados_json = json.dumps(datos_clasificados)
-                    logging.info("")
                     
                     await self.mqtt_client.publish(datos_clasificados["topico"], datos_clasificados_json)  # Publica el dato en el tópico correspondiente
                     
             except Exception as e:
-                logging.error(f"Error en la conexión serial: {e}.\n Cerrando y reintentando en 10 segundos...")
+                logging.error(f"[Serial_Listener] \n Error en la conexión serial: Mensaje no reconocido para procesar.\n Cerrando y reintentando en 10 segundos... \n")
                 
-
                 try:
                     self.ser.close()
                 except:
@@ -80,12 +77,11 @@ class SerialListener:
         while True:
             try:
                 self.ser = AioSerial(port=self.puerto, baudrate=self.baudrate)
-                logging.info(f"Serial conectado en {self.puerto}")
+                logging.info(f"[Serial_Listener] \n Serial conectado en {self.puerto} \n")
                 return
             except Exception as e:
-                logging.info("[Serial_Listener] ")
-                logging.error(f"Error al conectar con el puerto serial: {e}. Reintentando en 10 segundos...")
-                logging.info("")
+                logging.info("[Serial_Listener] \n ")
+                logging.error(f"[Serial_Listener] \n Error al conectar con el puerto serial: {e}. Reintentando en 10 segundos... \n")
                 await asyncio.sleep(10)  # Esperar antes de reintentar
 
 

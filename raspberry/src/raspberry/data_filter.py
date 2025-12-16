@@ -22,7 +22,7 @@ class DataFilter:
         while True:
             tank = await self.tank_data_queue.get()     # Esperar a recibir un mensaje de tanque
             tank_dic = self.mqtt_to_dict(tank)          # Convertir el mensaje MQTT a diccionario
-            logging.info(f"Procesando mensaje de tanque: {tank_dic}")
+            logging.info(f"[DATA_Filter] \n Procesando mensaje de tanque: {tank_dic} \n")
 
             tank_level = tank_dic["nivel"]             # Obtener el nivel del tanque del diccionario
             tank_tipo = tank_dic["tipo"]
@@ -31,34 +31,34 @@ class DataFilter:
             if self.is_relevant(tank_tipo, tank_level):
                 
                 tank_dic["tiempo"] = self.get_timestamp_utc()
-                logging.info(f"Tiempo es {tank_dic['tiempo']}")
+                logging.info(f"[DATA_Filter] \n Tiempo es {tank_dic['tiempo']} \n")
 
                 await self.db_queue.put({"tiempo": tank_dic["tiempo"],
                                          "tipoFertilizante": tank_dic["tipoFertilizante"],
                                          "nivel": tank_dic["nivel"],
                                          "collection": "tank_levels"})      # Se envía el diccionario al queue de la base de datos
             else:
-                logging.info(f"Mensaje de tanque descartado por el filtro: {tank_dic}")
+                logging.info(f"[DATA_Filter] \n Mensaje de tanque descartado por el filtro: {tank_dic} \n")
 
     async def pressure_processor(self):
         while True:
             pressure = await self.pressure_data_queue.get()
             pressure_dic = self.mqtt_to_dict(pressure)
-            logging.info(f"Procesando mensaje de manómetro: {pressure_dic}")
+            logging.info(f"[DATA_Filter] \n Procesando mensaje de manómetro: {pressure_dic} \n")
 
             pressure_value = pressure_dic["presion"]
             pressure_tipo = pressure_dic["tipo"]
 
             if self.is_relevant(pressure_tipo, pressure_value):
                 pressure_dic["tiempo"] = self.get_timestamp_utc()
-                logging.info(f"Tiempo es {pressure_dic['tiempo']}")
+                logging.info(f"[DATA_Filter] \n Tiempo es {pressure_dic['tiempo']} \n")
                 
 
                 await self.db_queue.put({"tiempo": pressure_dic["tiempo"],
                                          "presion": pressure_dic["presion"],
                                          "collection": "irrigation_pressure"})
             else:
-                logging.info(f"Mensaje de manómetro descartado por el filtro: {pressure_dic}")
+                logging.info(f"[DATA_Filter] \n Mensaje de manómetro descartado por el filtro: {pressure_dic} \n")
                 
     
     async def environment_processor(self):
@@ -72,7 +72,7 @@ class DataFilter:
             air_co2 = None
             
             try:
-                logging.info("Procesando mensaje ambiental...")
+                logging.info("[DATA_Filter] \n Procesando mensaje ambiental... \n")
                 for message in environment_dic["object"]["messages"]:
                     if "measurementId" in message:
                         if message["measurementId"] == 4097:  # Temperature
@@ -82,7 +82,7 @@ class DataFilter:
                         elif message["measurementId"] == 4100:  # CO2
                             air_co2 = message["measurementValue"]
 
-                logging.info(f"Air Temperature: {air_temp}, Air Humidity: {air_humidity}, Air CO2: {air_co2}")
+                logging.info(f"[DATA_Filter] \n Air Temperature: {air_temp}, Air Humidity: {air_humidity}, Air CO2: {air_co2} \n")
                 
 
                 timestamp_utc = self.get_timestamp_utc()
@@ -92,7 +92,7 @@ class DataFilter:
                                         "co2_aire": air_co2,
                                         "collection": "environment_readings"})
             except Exception as e:
-                logging.warning(f"[DATA_Filter] \n [WARN] Error al procesar mensaje ambiental: {e} \n No se encontró {e} en el mensaje ambiental: \n{environment_dic} ")
+                logging.warning(f"[DATA_Filter] \n [WARN] Error al procesar mensaje ambiental: {e} \n No se encontró {e} en el mensaje ambiental: \n{environment_dic} \n")
                 
             
 
@@ -115,7 +115,7 @@ class DataFilter:
             soil_moisture = None
             soil_temperature = None
             try:
-                logging.info("Procesando mensaje del suelo...")
+                logging.info("[DATA_Filter] \n Procesando mensaje del suelo... \n")
                 for message in soil_dic["object"]["messages"]:
                     if "measurementId" in message:
                         if message["measurementId"] == 4102:  # Soil Temperature
@@ -123,7 +123,7 @@ class DataFilter:
                         elif message["measurementId"] == 4103:  # Soil Moisture
                             soil_moisture = message["measurementValue"]
                             
-                logging.info(f"Soil Moisture: {soil_moisture}, Soil Temperature: {soil_temperature}")
+                logging.info(f" [DATA_Filter] \n Soil Moisture: {soil_moisture}, Soil Temperature: {soil_temperature} \n")
 
                 timestamp_utc = self.get_timestamp_utc()
                 await self.db_queue.put({"tiempo": timestamp_utc,
@@ -131,13 +131,13 @@ class DataFilter:
                                         "temperatura_suelo": soil_temperature,
                                         "collection": "soil_readings"})
             except Exception as e:
-                logging.warning(f"[DATA_Filter] \n [WARN] Error al procesar mensaje del suelo: {e} \n No se encontró {e} en el mensaje del suelo: \n{soil_dic} ")
+                logging.warning(f"[DATA_Filter] \n [WARN] Error al procesar mensaje del suelo: {e} \n No se encontró {e} en el mensaje del suelo: \n{soil_dic} \n")
 
     def is_relevant(self, type, value):
         
-        logging.info(f"[DATA_filter]")
-        logging.info(f" tipo: {type} \n valor: {value}")
-        logging.info(f" umbral: {self.THRESHOLDS[type]} \n ultimo valor: {self.last_values.get(type, 'N/A')}")
+        logging.info(f"[DATA_Filter] \n")
+        logging.info(f" tipo: {type} \n valor: {value} \n")
+        logging.info(f" umbral: {self.THRESHOLDS[type]} \n ultimo valor: {self.last_values.get(type, 'N/A')} \n")
         if type not in self.last_values:
             self.last_values[type] = value
             return True  # Primer dato, siempre pasa el filtro
@@ -145,9 +145,9 @@ class DataFilter:
 
         if abs(value - self.last_values[type]) >= self.THRESHOLDS[type]:
             self.last_values[type] = value
-            logging.info("Dato relevante. Procede a enviarse a la BD")
+            logging.info("[DATA_Filter] \n Dato relevante. Procede a enviarse a la BD \n")
             return True  # El dato pasa el filtro
-        logging.info("Dato no relevante. No se envía a la BD")
+        logging.info("[DATA_Filter] \n Dato no relevante. No se envía a la BD \n")
         return False  # El dato no pasa el filtro
 
     def get_timestamp_utc(self):
