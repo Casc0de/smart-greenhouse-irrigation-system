@@ -19,25 +19,29 @@ class DataFilter:
 
     async def tank_processor(self):
         while True:
-            tank = await self.tank_data_queue.get()     # Esperar a recibir un mensaje de tanque
-            tank_dic = self.mqtt_to_dict(tank)          # Convertir el mensaje MQTT a diccionario
-            print(f"Procesando mensaje de tanque: {tank_dic}")
+            try:
+                tank = await self.tank_data_queue.get()     # Esperar a recibir un mensaje de tanque
+                print("aaaaaa")
+                tank_dic = self.mqtt_to_dict(tank)          # Convertir el mensaje MQTT a diccionario
+                print(f"Procesando mensaje de tanque: {tank_dic}")
 
-            tank_level = tank_dic["nivel"]             # Obtener el nivel del tanque del diccionario
-            tank_tipo = tank_dic["tipo"]
-            
-            # Filtrar mensaje de tanque ------------------------
-            if self.is_relevant(tank_tipo, tank_level):
+                tank_level = tank_dic["nivel"]             # Obtener el nivel del tanque del diccionario
+                tank_tipo = tank_dic["tipo"]
                 
-                tank_dic["tiempo"] = self.get_timestamp_utc()
-                print(f"Tiempo es {tank_dic['tiempo']}")
+                # Filtrar mensaje de tanque ------------------------
+                if self.is_relevant(tank_tipo, tank_level):
+                    
+                    tank_dic["tiempo"] = self.get_timestamp_utc()
+                    print(f"Tiempo es {tank_dic['tiempo']}")
 
-                await self.db_queue.put({"tiempo": tank_dic["tiempo"],
-                                         "tipoFertilizante": tank_dic["tipoFertilizante"],
-                                         "nivel": tank_dic["nivel"],
-                                         "collection": "tank_levels"})      # Se envía el diccionario al queue de la base de datos
-            else:
-                print(f"Mensaje de tanque descartado por el filtro: {tank_dic}")
+                    await self.db_queue.put({"tiempo": tank_dic["tiempo"],
+                                            "tipoFertilizante": tank_dic["tipoFertilizante"],
+                                            "nivel": tank_dic["nivel"],
+                                            "collection": "tank_levels"})      # Se envía el diccionario al queue de la base de datos
+                else:
+                    print(f"Mensaje de tanque descartado por el filtro: {tank_dic}")
+            except Exception as e:
+                print(f"[DATA_Filter] \n [WARN] Error al procesar mensaje de tanque: {e} \n No se encontró {e} en el mensaje de tanque: \n{tank_dic} ")
 
     async def pressure_processor(self):
         while True:
@@ -147,6 +151,7 @@ class DataFilter:
 
     def get_timestamp_utc(self):
         # Normalizar/convertir el campo 'tiempo' a un datetime con zona UTC
+        print("Prueba")
         raw_time = datetime.now(timezone.utc)
         if isinstance(raw_time, str):
             try:
@@ -161,7 +166,7 @@ class DataFilter:
             dt = raw_time.astimezone(timezone.utc) if raw_time.tzinfo else raw_time.replace(tzinfo=timezone.utc)
         else:
             dt = datetime.now(timezone.utc)
-
+        print(f"[DATA_Filter] Tiempo UTC normalizado: {dt}")
         return dt
     
     def mqtt_to_dict(self, mqtt_message):           # Se obtiene el mensaje de mqtt: objeto MQTT

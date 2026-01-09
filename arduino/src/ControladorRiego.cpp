@@ -1,5 +1,14 @@
 #include "ControladorRiego.h"
 
+// Duraciones de cada estado (simulación) en ms
+static const unsigned long T_INICIO_MS = 5UL * 1000UL;
+static const unsigned long T_ENCENDIDO_MOTOR_MS = 20UL * 1000UL;
+static const unsigned long T_PRESURIZACION_MS = 20UL * 1000UL;
+static const unsigned long T_TANQUE_MS = 20UL * 1000UL;
+static const unsigned long T_LAVADO_MS = 20UL * 1000UL;
+static const unsigned long T_TRANSICION_SECCION_MS = 20UL * 1000UL;
+static const unsigned long T_CIERRE_MS = 20UL * 1000UL;
+
 ControladorRiego::ControladorRiego(ControladorComunicacionConRaspberry &ctlComExistente)
     : ctlComunicacion(ctlComExistente),
       bomba(14, 15),

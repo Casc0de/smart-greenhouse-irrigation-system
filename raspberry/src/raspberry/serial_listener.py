@@ -9,8 +9,7 @@ Formato de datos recibidos desde Arduino (JSON):
 {
     "tipo": "tanque",
     "tipoFertilizante": "M" | "B" | "C",  # Solo para tipo "tanque"
-    "nivel": float,                        # Solo para tipo "tanque"
-    "presion": float
+    "nivel": int                          # Solo para tipo "tanque"
 }
 
 {

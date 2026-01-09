@@ -5,10 +5,10 @@ ControladorTiempo::ControladorTiempo()
           Horario('U', 6, false),  // Domingo a las 6 AM
           Horario('M', 6, true),   // Lunes a las 6 AM
           Horario('T', 6, false),  // Martes a las 6 AM
-          Horario('W', 18, true),  // Miércoles a las 6 PM
+          Horario('W', 19, true),  // Miércoles a las 7 PM
           Horario('R', 6, false),  // Jueves a las 6 AM
           Horario('F', 6, true),   // Viernes a las 6 AM
-          Horario('S', 18, true)}, // Sábado a las 6 PM
+          Horario('S', 18, true)}, // Sábado a las 6 AM
       rtc()
 {
 }
