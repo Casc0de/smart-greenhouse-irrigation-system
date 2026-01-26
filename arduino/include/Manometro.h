@@ -10,11 +10,12 @@ private:
     uint8_t _pinIn;
 
 public:
-    uint8_t presion = 0;
+    uint8_t presion = 0; // presión redondeada (0–30 psi)
 
     Manometro(uint8_t pinIn);
     void begin();
-    uint8_t medirPresion();
+
+    float medirPresion(); // <-- devuelve PSI real (float)
 };
 
 #endif

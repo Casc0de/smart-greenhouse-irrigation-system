@@ -8,16 +8,24 @@ ValvulaOnOff::ValvulaOnOff(uint8_t pinOpen)
 void ValvulaOnOff::begin()
 {
     pinMode(_pinOpen, OUTPUT);
-    // No se usa _pinShut en estas válvulas On-Off
+
+    // Asumimos relé low-level trigger:
+    // HIGH = relé OFF (válvula cerrada)
+    // LOW  = relé ON  (válvula abierta)
+    digitalWrite(_pinOpen, HIGH);
+    posicion = 0; // cerrada
 }
 
-// TODO: REVISAR
 void ValvulaOnOff::abrir()
 {
+    // Activar relé → abrir válvula
     digitalWrite(_pinOpen, LOW);
+    posicion = 1;
 }
-// TODO: REVISAR
+
 void ValvulaOnOff::cerrar()
 {
+    // Desactivar relé → cerrar válvula
     digitalWrite(_pinOpen, HIGH);
+    posicion = 0;
 }

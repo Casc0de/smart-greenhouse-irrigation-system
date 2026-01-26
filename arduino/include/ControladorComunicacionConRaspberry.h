@@ -16,7 +16,7 @@ private:
 public:
     ControladorComunicacionConRaspberry(HardwareSerial &port,
                                         uint8_t retries = 3,
-                                        uint16_t timeoutInMs = 1000);
+                                        uint16_t timeoutInMs = 2000);
 
     bool enviarManometro(const Manometro &objManometro);
     bool enviarTanque(const Tanque &objTanque);

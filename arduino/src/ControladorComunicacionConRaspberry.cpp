@@ -18,6 +18,7 @@ bool ControladorComunicacionConRaspberry::enviarManometro(const Manometro &objMa
         doc["presion"] = objManometro.presion;
         // serializeJson --> El primer argumento es el documento JSON, el segundo es en dónde quiero guardar/enviar el JSON
         serializeJson(doc, _serialPort);
+        _serialPort.println(); // Asegurarse de enviar un salto de línea al final
 
         if (waitForAck())
         {
@@ -25,7 +26,8 @@ bool ControladorComunicacionConRaspberry::enviarManometro(const Manometro &objMa
             return true;
         }
         // Si no se recibe ACK, esperar un poco antes de reintentar
-        delay(1000);
+        _serialPort.println("Reintentando enviar estado de manometro...");
+        _serialPort.println(); // Asegurarse de enviar un salto de línea al final
     }
     // Si se agotaron los reintentos, retornar false
     return false;
@@ -37,10 +39,11 @@ bool ControladorComunicacionConRaspberry::enviarTanque(const Tanque &objTanque)
     {
         JsonDocument doc;
         doc["tipo"] = "tanque";
-        doc["nivel"] = objTanque.nivel;
         doc["tipoFertilizante"] = (String)objTanque.tipo;
+        doc["nivel"] = objTanque.nivel;
         // serializeJson --> El primer argumento es el documento JSON, el segundo es en dónde quiero guardar/enviar el JSON
         serializeJson(doc, _serialPort);
+        _serialPort.println(); // Asegurarse de enviar un salto de línea al final
 
         if (waitForAck())
         {
@@ -48,8 +51,9 @@ bool ControladorComunicacionConRaspberry::enviarTanque(const Tanque &objTanque)
             return true;
         }
         // Si no se recibe ACK, esperar un poco antes de reintentar
-        delay(1000);
+
         _serialPort.println("Reintentando enviar estado de tanque...");
+        _serialPort.println(); // Asegurarse de enviar un salto de línea al final
     }
     // Si se agotaron los reintentos, retornar false
     return false;
@@ -65,6 +69,7 @@ bool ControladorComunicacionConRaspberry::enviarEstadoBomba(bool &estado)
         doc["estado"] = estado;
         // serializeJson --> El primer argumento es el documento JSON, el segundo es en dónde quiero guardar/enviar el JSON
         serializeJson(doc, _serialPort);
+        _serialPort.println(); // Asegurarse de enviar un salto de línea al final
 
         if (waitForAck())
         {
@@ -72,8 +77,9 @@ bool ControladorComunicacionConRaspberry::enviarEstadoBomba(bool &estado)
             return true;
         }
         // Si no se recibe ACK, esperar un poco antes de reintentar
-        delay(1000);
+
         _serialPort.println("Reintentando enviar estado de bomba...");
+        _serialPort.println(); // Asegurarse de enviar un salto de línea al final
     }
     // Si se agotaron los reintentos, retornar false
     return false;
