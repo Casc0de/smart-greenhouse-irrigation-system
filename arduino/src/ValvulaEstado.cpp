@@ -11,17 +11,34 @@ void ValvulaEstado::begin()
     pinMode(_pinShut, OUTPUT);
 }
 
-// TODO: REVISAR
 void ValvulaEstado::abrir(uint8_t t)
 {
     digitalWrite(_pinOpen, LOW);
-    delay(t * 1000);
-    digitalWrite(_pinOpen, HIGH);
+
+    int inicioCiclo = millis();           // Obtener el tiempo actual
+    while (!activarTimer(t, inicioCiclo)) // Hasta que el timer no se dispare, siga en el ciclo preguntando
+    {
+        digitalWrite(_pinOpen, HIGH);
+    }
 }
-// TODO: REVISAR
+
 void ValvulaEstado::cerrar(uint8_t t)
 {
     digitalWrite(_pinShut, LOW);
-    delay(t * 1000);
-    digitalWrite(_pinShut, HIGH);
+
+    int inicioCiclo = millis();           // Obtener el tiempo actual
+    while (!activarTimer(t, inicioCiclo)) // Hasta que el timer no se dispare, siga en el ciclo preguntando
+    {
+        digitalWrite(_pinShut, HIGH);
+    }
+}
+
+bool ValvulaEstado::activarTimer(uint8_t tLimite, int &inicioCiclo)
+{
+    int ahora = millis();                      // Obtener el tiempo actual
+    if (ahora - inicioCiclo >= tLimite * 1000) // Cuando se supere el tiempo límite
+    {
+        return true;
+    }
+    return false;
 }

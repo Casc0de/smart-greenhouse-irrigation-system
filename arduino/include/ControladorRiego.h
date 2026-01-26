@@ -12,27 +12,33 @@ U = Sunday
 #define CONTROLADORRIEGO_H
 
 #include <Arduino.h>
-#include "Bomba.h"
-#include "ValvulaEstado.h"
+
+#include "Manometro.h"
+#include "EstadoTanque.h"
 #include "ValvulaOnOff.h"
-#include "ControladorSensores.h"
-#include "ControladorComunicacionConRaspberry.h"
+#include "ValvulaEstado.h"
+#include "Bomba.h"
+#include "ServicioComunicacion.h"
+
+static constexpr uint8_t NUM_VALVULAS_ON_OFF = 5;
+static constexpr uint8_t NUM_VALVULAS_ESTADO = 2;
+static constexpr uint8_t NUM_TANQUES = 3;
 
 class ControladorRiego
 {
-public:
-    ControladorSensores ctlSensores;
-    ControladorComunicacionConRaspberry &ctlComunicacion;
-    static constexpr uint8_t NUM_VALVULAS_ON_OFF = 5;
-    static constexpr uint8_t NUM_VALVULAS_ESTADO = 2;
+private:
     Bomba bomba;
+    Manometro manometroSensor;
+
+    EstadoTanque tanquesEstado[NUM_TANQUES];
     ValvulaOnOff valvulasOnOff[NUM_VALVULAS_ON_OFF];
     ValvulaEstado valvulasEstado[NUM_VALVULAS_ESTADO];
 
-    ControladorRiego(ControladorComunicacionConRaspberry &ctlComExistente); // constructor
+    ServicioComunicacion &comms;
+
+public:
+    ControladorRiego(ServicioComunicacion &commsExistente); // constructor
     void begin();
-    void leerValoresValvulasOnOff();
-    void leerValoresValvulasEstado();
     void regar();
 };
 

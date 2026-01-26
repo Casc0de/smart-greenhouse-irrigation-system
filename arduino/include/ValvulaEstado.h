@@ -9,6 +9,7 @@ class ValvulaEstado
 private:
     uint8_t _pinOpen;
     uint8_t _pinShut;
+    bool activarTimer(uint8_t tiempoLimite, int &inicioCiclo);
 
 public:
     uint8_t posicion = 0;

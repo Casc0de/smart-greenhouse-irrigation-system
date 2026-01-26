@@ -8,10 +8,9 @@ class Manometro
 {
 private:
     uint8_t _pinIn;
-
-public:
     uint8_t presion = 0;
 
+public:
     Manometro(uint8_t pinIn);
     void begin();
     uint8_t medirPresion();

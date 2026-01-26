@@ -10,8 +10,6 @@ private:
     uint8_t _pinOpen;
 
 public:
-    uint8_t posicion = 0;
-
     ValvulaOnOff(uint8_t pinOpen);
     void begin();
     void abrir();

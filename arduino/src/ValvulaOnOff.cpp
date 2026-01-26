@@ -7,8 +7,7 @@ ValvulaOnOff::ValvulaOnOff(uint8_t pinOpen)
 
 void ValvulaOnOff::begin()
 {
-    pinMode(_pinOpen, OUTPUT);
-    // No se usa _pinShut en estas válvulas On-Off
+    pinMode(_pinOpen, OUTPUT); // No se usa _pinShut en estas válvulas On-Off
 }
 
 // TODO: REVISAR

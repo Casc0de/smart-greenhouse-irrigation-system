@@ -1,21 +1,21 @@
-#include "ControladorComunicacionConRaspberry.h"
+#include "ServicioComunicacion.h"
 
-ControladorComunicacionConRaspberry::ControladorComunicacionConRaspberry(HardwareSerial &port,
-                                                                         uint8_t retries,
-                                                                         uint16_t timeoutInMs)
+ServicioComunicacion::ServicioComunicacion(HardwareSerial &port,
+                                           uint8_t retries,
+                                           uint16_t timeoutInMs)
     : _serialPort(port),
       _maxRetries(retries),
       _timeout(timeoutInMs)
 {
 }
 
-bool ControladorComunicacionConRaspberry::enviarManometro(const Manometro &objManometro)
+bool ServicioComunicacion::enviarManometro(uint8_t presion)
 {
     for (uint8_t attempt = 0; attempt < _maxRetries; ++attempt)
     {
         JsonDocument doc;
         doc["tipo"] = "manometro";
-        doc["presion"] = objManometro.presion;
+        doc["presion"] = presion;
         // serializeJson --> El primer argumento es el documento JSON, el segundo es en dónde quiero guardar/enviar el JSON
         serializeJson(doc, _serialPort);
         _serialPort.println(); // Asegurarse de enviar un salto de línea al final
@@ -32,14 +32,14 @@ bool ControladorComunicacionConRaspberry::enviarManometro(const Manometro &objMa
     return false;
 }
 
-bool ControladorComunicacionConRaspberry::enviarTanque(const Tanque &objTanque)
+bool ServicioComunicacion::enviarTanque(uint8_t nivelTanque, char tipoFertilizanteTanque)
 {
     for (uint8_t attempt = 0; attempt < _maxRetries; ++attempt)
     {
         JsonDocument doc;
         doc["tipo"] = "tanque";
-        doc["tipoFertilizante"] = (String)objTanque.tipo;
-        doc["nivel"] = objTanque.nivel;
+        doc["tipoFertilizante"] = (String)tipoFertilizanteTanque;
+        doc["nivel"] = nivelTanque;
         // serializeJson --> El primer argumento es el documento JSON, el segundo es en dónde quiero guardar/enviar el JSON
         serializeJson(doc, _serialPort);
         _serialPort.println(); // Asegurarse de enviar un salto de línea al final
@@ -57,14 +57,14 @@ bool ControladorComunicacionConRaspberry::enviarTanque(const Tanque &objTanque)
     return false;
 }
 
-bool ControladorComunicacionConRaspberry::enviarEstadoBomba(bool &estado)
+bool ServicioComunicacion::enviarEstadoBomba(bool estadoBomba)
 {
     // Intentar enviar el estado de la bomba varias veces
     for (uint8_t attempt = 0; attempt < _maxRetries; ++attempt)
     {
         JsonDocument doc;
         doc["tipo"] = "bomba";
-        doc["estado"] = estado;
+        doc["estado"] = estadoBomba;
         // serializeJson --> El primer argumento es el documento JSON, el segundo es en dónde quiero guardar/enviar el JSON
         serializeJson(doc, _serialPort);
         _serialPort.println(); // Asegurarse de enviar un salto de línea al final
@@ -83,7 +83,7 @@ bool ControladorComunicacionConRaspberry::enviarEstadoBomba(bool &estado)
 }
 
 // return true si recibe ACK, false si no
-bool ControladorComunicacionConRaspberry::waitForAck()
+bool ServicioComunicacion::waitForAck()
 {
     unsigned long start = millis();
     String buffer = "";

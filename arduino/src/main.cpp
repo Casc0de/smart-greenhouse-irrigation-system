@@ -2,13 +2,12 @@
 
 #include "Horario.h"
 #include "ControladorRiego.h"
-#include "ControladorComunicacionConRaspberry.h"
+#include "ServicioComunicacion.h"
 #include "ControladorTiempo.h"
 
-// put function and object declarations here:
-
-ControladorComunicacionConRaspberry ctlComRaspberry(Serial);
-ControladorRiego ctlRiego(ctlComRaspberry);
+// function and object declarations here:
+ServicioComunicacion srvComm(Serial);
+ControladorRiego ctlRiego(srvComm);
 ControladorTiempo ctlTiempo;
 
 void setup()
@@ -22,24 +21,4 @@ void setup()
 void loop()
 {
   // ctlRiego.regar();
-  ctlRiego.ctlSensores.manometroSensor.presion = 25.5; // Simular una presión
-  ctlComRaspberry.enviarManometro(ctlRiego.ctlSensores.manometroSensor);
-  delay(2000);
-
-  ctlRiego.ctlSensores.manometroSensor.presion = 20; // Simular una presión
-  ctlComRaspberry.enviarManometro(ctlRiego.ctlSensores.manometroSensor);
-  delay(2000);
-
-  ctlRiego.ctlSensores.tanques[1].nivel = 0; // Simular un nivel de tanque
-  ctlComRaspberry.enviarTanque(ctlRiego.ctlSensores.tanques[1]);
-  delay(2000);
-  ctlRiego.ctlSensores.tanques[1].nivel = 50; // Simular un nivel de tanque
-  ctlComRaspberry.enviarTanque(ctlRiego.ctlSensores.tanques[1]);
-  delay(2000);
-  // ctlComRaspberry.enviarManometro(ctlRiego.ctlSensores.manometroSensor);
-  // delay(2000);
-  ctlRiego.ctlSensores.tanques[1].nivel = 100; // Simular un nivel de tanque
-  delay(2000);
-  ctlComRaspberry.enviarTanque(ctlRiego.ctlSensores.tanques[1]);
-  delay(2000);
 }

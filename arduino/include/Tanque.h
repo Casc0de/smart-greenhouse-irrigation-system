@@ -1,5 +1,4 @@
 /*
-
 M = Monday
 T = Tuesday
 W = Wednesday
@@ -20,11 +19,10 @@ class Tanque
 private:
     uint8_t _pinEcho;
     uint8_t _pinTrigger;
-
-public:
     uint8_t nivel = 0; // Nivel de fertilizante en el tanque
     char tipo;         // Tipo de fertilizante por día
 
+public:
     Tanque(uint8_t pinEcho,
            uint8_t pinTrigger,
            char tipoFertilizante); // constructor
