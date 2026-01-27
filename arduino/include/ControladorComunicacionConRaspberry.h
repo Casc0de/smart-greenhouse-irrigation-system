@@ -5,6 +5,7 @@
 #include <ArduinoJson.h>
 #include "Manometro.h"
 #include "Tanque.h"
+#include "Bomba.h"
 
 class ControladorComunicacionConRaspberry
 {
@@ -15,12 +16,12 @@ private:
 
 public:
     ControladorComunicacionConRaspberry(HardwareSerial &port,
-                                        uint8_t retries = 3,
+                                        uint8_t retries = 1,
                                         uint16_t timeoutInMs = 2000);
 
     bool enviarManometro(const Manometro &objManometro);
     bool enviarTanque(const Tanque &objTanque);
-    bool enviarEstadoBomba(bool &estado);
+    bool enviarEstadoBomba(const Bomba &objBomba);
     bool waitForAck();
 };
 

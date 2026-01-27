@@ -12,8 +12,8 @@ public:
     RTC_DS3231 rtc;      // Objeto RTC para manejar el tiempo real
 
     ControladorTiempo(); // constructor
+    
     void begin();
-
     // Devuelve true SOLO la primera vez que se cumple la hora
     // de riego programada del día actual.
     bool esMomentoDeRiego();

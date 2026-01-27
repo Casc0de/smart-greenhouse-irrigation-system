@@ -15,7 +15,6 @@ public:
 
     ControladorSensores(); // constructor
     void begin();
-    void medirPresion();
     void medirNivel();
 };
 

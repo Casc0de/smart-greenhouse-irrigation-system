@@ -3,7 +3,7 @@
 ControladorTiempo::ControladorTiempo()
     : horarios{
           Horario('U', 6, false),  // Domingo a las 6 AM
-          Horario('M', 6, true),   // Lunes a las 6 AM
+          Horario('M', 23, true),  // Lunes a las 11 PM
           Horario('T', 6, false),  // Martes a las 6 AM
           Horario('W', 19, true),  // Miércoles a las 7 PM
           Horario('R', 6, false),  // Jueves a las 6 AM
@@ -82,6 +82,8 @@ bool ControladorTiempo::esMomentoDeRiego()
     // Hora actual y programada (solo horas, sin minutos/segundos)
     uint8_t horaActual = now.hour();     // 0..23
     uint8_t horaProg = hHoy->horaARegar; // 0..23
+    Serial.print(">> ControladorTiempo: hora actual= " + String(horaActual) +
+                 ", hora programada= " + String(horaProg) + "\n");
 
     if (horaActual >= horaProg)
     {

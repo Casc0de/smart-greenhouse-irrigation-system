@@ -26,7 +26,9 @@ bool ControladorComunicacionConRaspberry::enviarManometro(const Manometro &objMa
             return true;
         }
         // Si no se recibe ACK, esperar un poco antes de reintentar
-        _serialPort.println("Reintentando enviar estado de manometro...");
+
+        // TODO: descomentar
+        //_serialPort.println("Reintentando enviar estado de manometro...");
         _serialPort.println(); // Asegurarse de enviar un salto de línea al final
     }
     // Si se agotaron los reintentos, retornar false
@@ -52,21 +54,23 @@ bool ControladorComunicacionConRaspberry::enviarTanque(const Tanque &objTanque)
         }
         // Si no se recibe ACK, esperar un poco antes de reintentar
 
-        _serialPort.println("Reintentando enviar estado de tanque...");
+        // TODO: descomentar
+        // _serialPort.println("Reintentando enviar estado de tanque...");
         _serialPort.println(); // Asegurarse de enviar un salto de línea al final
     }
     // Si se agotaron los reintentos, retornar false
     return false;
 }
 
-bool ControladorComunicacionConRaspberry::enviarEstadoBomba(bool &estado)
+bool ControladorComunicacionConRaspberry::enviarEstadoBomba(const Bomba &objBomba)
 {
     // Intentar enviar el estado de la bomba varias veces
     for (uint8_t attempt = 0; attempt < _maxRetries; ++attempt)
     {
         JsonDocument doc;
         doc["tipo"] = "bomba";
-        doc["estado"] = estado;
+        doc["estado"] = objBomba.funcionando;
+        doc["error"] = objBomba.errorAlarma;
         // serializeJson --> El primer argumento es el documento JSON, el segundo es en dónde quiero guardar/enviar el JSON
         serializeJson(doc, _serialPort);
         _serialPort.println(); // Asegurarse de enviar un salto de línea al final
@@ -78,7 +82,8 @@ bool ControladorComunicacionConRaspberry::enviarEstadoBomba(bool &estado)
         }
         // Si no se recibe ACK, esperar un poco antes de reintentar
 
-        _serialPort.println("Reintentando enviar estado de bomba...");
+        // TODO: descomentar
+        //_serialPort.println("Reintentando enviar estado de bomba...");
         _serialPort.println(); // Asegurarse de enviar un salto de línea al final
     }
     // Si se agotaron los reintentos, retornar false

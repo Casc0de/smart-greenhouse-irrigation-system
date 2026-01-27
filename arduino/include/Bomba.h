@@ -12,6 +12,7 @@ private:
 
 public:
     bool funcionando = false;
+    bool errorAlarma = false;
 
     Bomba(uint8_t pinEncender,
           uint8_t pinAlarma);
