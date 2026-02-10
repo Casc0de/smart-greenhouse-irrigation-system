@@ -11,31 +11,23 @@ void Tanque::begin()
 {
     pinMode(_pinEcho, INPUT);
     pinMode(_pinTrigger, OUTPUT);
-    digitalWrite(_pinTrigger, LOW); // reposo
+
+    // digitalWrite(_pinTrigger, LOW); // reposo
 }
 
 float Tanque::medirNivel()
 {
-    // --- Pulso TRIG (como el que ya comprobaste que funciona con tu JSN) ---
-    digitalWrite(_pinTrigger, LOW);
-    delayMicroseconds(5);
-
     digitalWrite(_pinTrigger, HIGH);
-    delayMicroseconds(20); // timing probado en tu laboratorio
+    delayMicroseconds(10); // Enviamos un pulso de 10us
     digitalWrite(_pinTrigger, LOW);
 
     // --- Lectura del ECHO ---
-    long duracion = pulseIn(_pinEcho, HIGH, 60000); // timeout 60 ms
-
-    if (duracion == 0)
-    {
-        // Sin eco: sensor fuera de rango o error.
-        // Devolvemos -1.0 para marcarlo claramente como lectura inválida.
-        return -1.0f;
-    }
+    long duracion = pulseIn(_pinEcho, HIGH); // obtenemos el ancho del pulso
 
     // Distancia en cm (velocidad sonido ~343 m/s → 0.0343 cm/us)
-    float distancia = (duracion * 0.0343f / 2.0f);
+    float distancia = duracion / 59; // escalamos el tiempo a una distancia en cm
+    // Serial.print("(Dentro de la función: distancia medida: ");
+    // Serial.println(distancia);
 
     // Aquí podrías convertir distancia → porcentaje de nivel si conoces
     // la altura útil del tanque. Ejemplo:
@@ -47,6 +39,6 @@ float Tanque::medirNivel()
     //
     // Por ahora solo actualizamos nivel de forma “dummy” si quieres:
     // nivel = (uint8_t)constrain(distancia, 0.0f, 255.0f);
-
+    delay(100);
     return distancia; // cm
 }

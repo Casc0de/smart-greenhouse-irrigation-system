@@ -13,14 +13,14 @@ ControladorRiego::ControladorRiego(ControladorComunicacionConRaspberry &ctlComEx
     : ctlComunicacion(ctlComExistente),
       bomba(11, 12),
       valvulasOnOff{
-          ValvulaOnOff(4),
-          ValvulaOnOff(5),
-          ValvulaOnOff(6),
-          ValvulaOnOff(9),
-          ValvulaOnOff(10)},
+          ValvulaOnOff(4),   // Tanque 1
+          ValvulaOnOff(5),   // Tanque 2
+          ValvulaOnOff(6),   // Tanque 3
+          ValvulaOnOff(9),   // Sección A
+          ValvulaOnOff(10)}, // Sección B
       valvulasEstado{
-          ValvulaEstado(2, 3),
-          ValvulaEstado(7, 8)},
+          ValvulaEstado(2, 3),      // Válvula de agua principal
+          ValvulaEstado(7, 8)},     // Presión
       _estadoActual(EST_FIN_CICLO), // arrancamos “en reposo”
       _tInicioEstado(0),
       _entryPendiente(true),
@@ -82,6 +82,7 @@ void ControladorRiego::regar()
     }
 
     // ==== DEBUG CADA 1 SEGUNDO ====
+    /*
     if (ahora - _ultimoPrint >= 1000UL)
     {
         _ultimoPrint = ahora;
@@ -128,12 +129,12 @@ void ControladorRiego::regar()
         Serial.print(tEnEstado / 1000);
         Serial.println(" s");
     }
-
+    */
     // Chequeo global de alarma de motor
     if (digitalRead(12) == LOW) // o HIGH, según tu wiring real
     {
-        Serial.println("ALARMA DE MOTOR ACTIVADA!");
-        // cambiarEstado(EST_ERROR_MOTOR);
+        // Serial.println("ALARMA DE MOTOR ACTIVADA!");
+        cambiarEstado(EST_ERROR_MOTOR);
     }
 
     switch (_estadoActual)
@@ -145,6 +146,9 @@ void ControladorRiego::regar()
         // ENTRY:
         if (_entryPendiente)
         {
+            ctlSensores.tanques[0].nivel = 100;
+            ctlSensores.tanques[1].nivel = 100;
+            ctlSensores.tanques[2].nivel = 100;
             // Enviar información de los tanques
             ctlComunicacion.enviarTanque(ctlSensores.tanques[0]);
             ctlComunicacion.enviarTanque(ctlSensores.tanques[1]);
@@ -172,6 +176,8 @@ void ControladorRiego::regar()
         // ENTRY:
         if (_entryPendiente)
         {
+            bomba.funcionando = true;
+            bomba.errorAlarma = false;
             ctlComunicacion.enviarEstadoBomba(bomba);
 
             _entryPendiente = false;
@@ -218,7 +224,18 @@ void ControladorRiego::regar()
         // ENTRY:
         if (_entryPendiente)
         {
-            Serial.println("=== Entrando en estado TANQUE1 ===");
+            // Enviar datos del tanque 1
+            if (_seccionActual == 0)
+            {
+                ctlSensores.tanques[0].nivel = 50; // simular tanque medio vacío
+            }
+            else
+            {
+                ctlSensores.tanques[0].nivel = 0; // simular tanque vacío
+            }
+            ctlComunicacion.enviarTanque(ctlSensores.tanques[0]);
+
+            // Serial.println("=== Entrando en estado TANQUE1 ===");
             _entryPendiente = false;
             // - Poner agua al 50% (cerrando un poco la válvula)
             valvulasEstado[0].cerrar(6);
@@ -245,7 +262,19 @@ void ControladorRiego::regar()
         // ENTRY:
         if (_entryPendiente)
         {
-            Serial.println("=== Entrando en estado TANQUE2 ===");
+            // Enviar datos del tanque 2
+            if (_seccionActual == 0)
+            {
+                ctlSensores.tanques[1].nivel = 50; // simular tanque medio vacío
+            }
+            else
+            {
+                ctlSensores.tanques[1].nivel = 0; // simular tanque vacío
+            }
+            ctlComunicacion.enviarTanque(ctlSensores.tanques[1]);
+
+            _entryPendiente = false;
+            // Serial.println("=== Entrando en estado TANQUE2 ===");
             valvulasOnOff[1].abrir(); // abrir tanque 2
         }
 
@@ -267,7 +296,19 @@ void ControladorRiego::regar()
         // ENTRY:
         if (_entryPendiente)
         {
+            // Enviar datos del tanque 3
+            if (_seccionActual == 0)
+            {
+                ctlSensores.tanques[2].nivel = 50; // simular tanque medio vacío
+            }
+            else
+            {
+                ctlSensores.tanques[2].nivel = 0; // simular tanque vacío
+            }
+            ctlComunicacion.enviarTanque(ctlSensores.tanques[2]);
+
             _entryPendiente = false;
+            // Serial.println("=== Entrando en estado TANQUE3 ===");
             valvulasOnOff[2].abrir(); // abrir tanque 3
         }
 
@@ -303,12 +344,6 @@ void ControladorRiego::regar()
         {
             if (_seccionActual == 0)
             {
-                ctlSensores.tanques[0].nivel = 50; // simular tanque vacío
-                ctlSensores.tanques[1].nivel = 50; // simular tanque vacío
-                ctlSensores.tanques[2].nivel = 50; // simular tanque vacío
-                ctlComunicacion.enviarTanque(ctlSensores.tanques[0]);
-                ctlComunicacion.enviarTanque(ctlSensores.tanques[1]);
-                ctlComunicacion.enviarTanque(ctlSensores.tanques[2]);
                 // Pasar a sección B
                 _seccionActual = 1;
                 cambiarEstado(EST_TRANSICION_SECCION);
@@ -316,12 +351,6 @@ void ControladorRiego::regar()
             else
             {
                 // Ya fue sección B → cierre total
-                ctlSensores.tanques[0].nivel = 0; // simular tanque vacío
-                ctlSensores.tanques[1].nivel = 0; // simular tanque vacío
-                ctlSensores.tanques[2].nivel = 0; // simular tanque vacío
-                ctlComunicacion.enviarTanque(ctlSensores.tanques[0]);
-                ctlComunicacion.enviarTanque(ctlSensores.tanques[1]);
-                ctlComunicacion.enviarTanque(ctlSensores.tanques[2]);
                 _seccionActual = 0;
                 cambiarEstado(EST_CIERRE_OPERACIONES);
             }
@@ -369,6 +398,9 @@ void ControladorRiego::regar()
         // EXIT
         if (tEnEstado >= T_CIERRE_MS)
         {
+            bomba.funcionando = false;
+            ctlComunicacion.enviarEstadoBomba(bomba);
+
             cambiarEstado(EST_FIN_CICLO);
         }
         break;
@@ -383,6 +415,7 @@ void ControladorRiego::regar()
             // ENTRY:
             // Dejar todo seguro
             bomba.apagar();
+
             for (uint8_t i = 0; i < NUM_VALVULAS_ON_OFF; ++i)
             {
                 valvulasOnOff[i].cerrar();
@@ -402,7 +435,8 @@ void ControladorRiego::regar()
 
             // ENTRY: apagar TODO por seguridad
             bomba.apagar();
-            // bomba.errorAlarma = true;
+            bomba.errorAlarma = true;
+
             ctlComunicacion.enviarEstadoBomba(bomba);
             for (uint8_t i = 0; i < NUM_VALVULAS_ON_OFF; ++i)
             {
@@ -413,7 +447,7 @@ void ControladorRiego::regar()
             {
                 valvulasEstado[i].cerrar(1); // pequeño pulso de cierre
             }
-            Serial.println("ERROR: Motor en falla. Sistema detenido.");
+            // Serial.println("ERROR: Motor en falla. Sistema detenido.");
         }
         // DO: quedarse aquí hasta reset manual
         break;

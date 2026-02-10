@@ -21,29 +21,16 @@ void setup()
   ctlRiego.begin();
   ctlTiempo.begin();
 
-  Serial.println("=== Sistema de riego automático iniciado ===");
+  // Serial.println("=== Sistema de riego automático iniciado ===");
 }
 
 void loop()
 {
-  //if (ctlTiempo.esMomentoDeRiego())
-  //{
-  //  Serial.println(">> ControladorTiempo: es momento de riego según horario");
-  //  ctlRiego.iniciarCiclo();
-  //}
+  if (ctlTiempo.esMomentoDeRiego())
+  {
+    // Serial.println(">> ControladorTiempo: es momento de riego según horario");
+    ctlRiego.iniciarCiclo();
+  }
 
-  //ctlRiego.regar();
-  Serial.print("Nivel tanque 1: ");
-  Serial.println(ctlRiego.ctlSensores.tanques[0].nivel);
-
-  delay(2000);
-
-  ctlRiego.ctlSensores.medirNivel();
-  
-  Serial.print("Nivel tanque 1: ");
-  Serial.println(ctlRiego.ctlSensores.tanques[0].nivel);
-
-  delay(2000);
-
-  
+  ctlRiego.regar();
 }

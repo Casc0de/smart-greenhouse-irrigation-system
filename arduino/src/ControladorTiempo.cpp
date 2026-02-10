@@ -3,12 +3,12 @@
 ControladorTiempo::ControladorTiempo()
     : horarios{
           Horario('U', 6, false),  // Domingo a las 6 AM
-          Horario('M', 23, true),  // Lunes a las 11 PM
-          Horario('T', 6, false),  // Martes a las 6 AM
-          Horario('W', 19, true),  // Miércoles a las 7 PM
+          Horario('M', 19, true),  // Lunes a las 6 PM
+          Horario('T', 15, true),  // Martes a las 2 PM
+          Horario('W', 20, true),  // Miércoles a las 8 PM
           Horario('R', 6, false),  // Jueves a las 6 AM
           Horario('F', 6, true),   // Viernes a las 6 AM
-          Horario('S', 18, true)}, // Sábado a las 6 AM
+          Horario('S', 18, true)}, // Sábado a las 6 PM
       rtc()
 {
 }
@@ -16,6 +16,7 @@ ControladorTiempo::ControladorTiempo()
 void ControladorTiempo::begin()
 {
     rtc.begin();
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     _ultimoDiaRTC = -1;
     _yaDisparoHoy = false;
 }
@@ -46,6 +47,7 @@ char ControladorTiempo::diaRTCToChar(int dow)
 
 bool ControladorTiempo::esMomentoDeRiego()
 {
+
     DateTime now = rtc.now();
 
     int diaRTC = now.dayOfTheWeek(); // 0..6
@@ -82,10 +84,12 @@ bool ControladorTiempo::esMomentoDeRiego()
     // Hora actual y programada (solo horas, sin minutos/segundos)
     uint8_t horaActual = now.hour();     // 0..23
     uint8_t horaProg = hHoy->horaARegar; // 0..23
-    Serial.print(">> ControladorTiempo: hora actual= " + String(horaActual) +
-                 ", hora programada= " + String(horaProg) + "\n");
 
-    if (horaActual >= horaProg)
+    uint8_t minutoActual = now.minute(); // 0..59
+
+    // Serial.print(">> ControladorTiempo: hora actual= " + String(horaActual) + ", hora programada= " + String(horaProg) + "\n");
+
+    if ((horaActual > horaProg) || (horaActual == horaProg && minutoActual >= 53))
     {
         _yaDisparoHoy = true; // ✅ solo una vez por día
         return true;          // 👉 es momento de arrancar el riego

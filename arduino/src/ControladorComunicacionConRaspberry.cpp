@@ -1,3 +1,23 @@
+/*
+========== Formato de los mensajes JSON enviados a la Raspberry Pi: ==========
+{
+  "tipo" : "tanque",
+  "tipoFertilizante" : "A" | "B" | "C",
+  "nivel" : int
+}
+
+{
+    "tipo" : "manometro",
+    "presion" : 25
+}
+
+{
+    "tipo" : "bomba",
+    "estado" : true,
+    "error" : false
+}
+*/
+
 #include "ControladorComunicacionConRaspberry.h"
 
 ControladorComunicacionConRaspberry::ControladorComunicacionConRaspberry(HardwareSerial &port,
