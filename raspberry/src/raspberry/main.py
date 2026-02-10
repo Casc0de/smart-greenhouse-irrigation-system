@@ -15,6 +15,7 @@ async def _main():
     # queues para la comunicación entre tareas ------------------------
     tank_data_queue = asyncio.Queue()
     pressure_data_queue = asyncio.Queue()
+    bomba_data_queue = asyncio.Queue()
     environment_data_queue = asyncio.Queue()
     soil_data_queue = asyncio.Queue()
 
@@ -23,12 +24,14 @@ async def _main():
     # Inicializar componentes asíncronos -------------------------------
     serial_listener = SerialListener(puerto=StaticConfig.SERIAL_PORT, 
                                      baudrate=StaticConfig.BAUDRATE)
-    mqtt_listener = MQTTListener(tank_data_queue, 
-                                 pressure_data_queue, 
-                                 environment_data_queue, 
-                                 soil_data_queue)
+    mqtt_listener = MQTTListener(   tank_data_queue, 
+                                    pressure_data_queue, 
+                                    bomba_data_queue,
+                                    environment_data_queue, 
+                                    soil_data_queue)
     data_filter = DataFilter(tank_data_queue, 
                              pressure_data_queue, 
+                             bomba_data_queue,
                              environment_data_queue,
                              soil_data_queue,
                              db_queue, 
@@ -51,6 +54,7 @@ async def _main():
                 mqtt_listener.recibir_dato(client),
                 data_filter.tank_processor(),
                 data_filter.pressure_processor(),
+                data_filter.bomba_processor(),
                 data_filter.environment_processor(),
                 data_filter.soil_processor(),
                 database_writer.start()

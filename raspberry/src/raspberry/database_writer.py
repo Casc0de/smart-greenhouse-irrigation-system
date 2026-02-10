@@ -16,6 +16,7 @@ class DatabaseWriter:
         self.collections = {
             "tank_levels": self.db["tank_levels"],
             "irrigation_pressure": self.db["irrigation_pressure"],
+            "pump_events": self.db["pump_events"],
             "environment_readings": self.db["environment_readings"],
             "soil_readings": self.db["soil_readings"]
         }

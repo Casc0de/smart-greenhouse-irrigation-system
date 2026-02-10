@@ -21,12 +21,12 @@ class DataFilter:
         while True:
             try:
                 tank = await self.tank_data_queue.get()     # Esperar a recibir un mensaje de tanque
-                print("aaaaaa")
+
                 tank_dic = self.mqtt_to_dict(tank)          # Convertir el mensaje MQTT a diccionario
                 print(f"Procesando mensaje de tanque: {tank_dic}")
 
                 tank_level = tank_dic["nivel"]             # Obtener el nivel del tanque del diccionario
-                tank_tipo = tank_dic["tipo"]
+                tank_tipo = f"tanque_{tank_dic['tipo']}"
                 
                 # Filtrar mensaje de tanque ------------------------
                 if self.is_relevant(tank_tipo, tank_level):
@@ -61,6 +61,20 @@ class DataFilter:
                                          "collection": "irrigation_pressure"})
             else:
                 print(f"Mensaje de manómetro descartado por el filtro: {pressure_dic}")
+    
+    async def bomba_processor(self):
+        while True:
+            bomba = await self.bomba_data_queue.get()
+            bomba_dic = self.mqtt_to_dict(bomba)
+            print(f"Procesando mensaje de bomba: {bomba_dic}")
+            
+            bomba_dic["tiempo"] = self.get_timestamp_utc()
+            print(f"Tiempo es {bomba_dic['tiempo']}")
+
+            await self.db_queue.put({"tiempo": bomba_dic["tiempo"],
+                                    "estado": bomba_dic["estado"],
+                                    "error": bomba_dic["error"],
+                                    "collection": "pump_events"})
     
     async def environment_processor(self):
         while True:

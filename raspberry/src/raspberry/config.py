@@ -10,7 +10,9 @@ class StaticConfig:
 
     # Data filtering thresholds
     THRESHOLDS = {
-        "tanque": 5,      # Umbral para nivel de tanque
+        "tanque_A": 5,      # Umbral para nivel de tanque
+        "tanque_B": 5,      # Umbral para nivel de tanque
+        "tanque_C": 5,      # Umbral para nivel de tanque
         "manometro": 2,   # Umbral para presión del manómetro
         "bomba": 1,        # Umbral para estado de la bomba
         "air_temp": 0,  # Umbral para temperatura ambiente
